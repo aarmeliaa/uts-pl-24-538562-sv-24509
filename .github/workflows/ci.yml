@@ -1,0 +1,71 @@
+name: CI
+
+on:
+  push:
+    branches: [main, dev, 'feature/**']
+  pull_request:
+    branches: [main, dev]
+
+# The default token can only read the repository.
+permissions:
+  contents: read
+
+jobs:
+  backend-test:
+    name: backend-test
+    runs-on: ubuntu-24.04
+    # Same PHP version as local development and the backend Dockerfile.
+    container: php:8.4.27-cli
+    defaults:
+      run:
+        working-directory: backend
+    env:
+      # Taken from GitHub Secrets, never written in the repository.
+      APP_KEY: ${{ secrets.APP_KEY }}
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v7
+
+      - name: Install unzip (needed by Composer)
+        run: apt-get update && apt-get install -y --no-install-recommends unzip
+
+      - name: Install Composer 2.9.2 (checksum verified)
+        run: |
+          curl -sSL -o /usr/local/bin/composer https://getcomposer.org/download/2.9.2/composer.phar
+          echo "471f2d857abf0ec18af7b055e61472214d91adb24f9bdbbb864c1c64faad7dd6  /usr/local/bin/composer" | sha256sum -c -
+          chmod +x /usr/local/bin/composer
+
+      - name: Install PHP dependencies
+        run: composer install --no-interaction --no-progress --prefer-dist
+
+      - name: Prepare .env (no secrets inside; APP_KEY comes from the env above)
+        run: cp .env.example .env
+
+      - name: Run tests
+        # phpunit.xml switches the database to in-memory SQLite.
+        run: php artisan test
+
+  frontend-build:
+    name: frontend-build
+    runs-on: ubuntu-24.04
+    defaults:
+      run:
+        working-directory: frontend
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v7
+
+      - name: Set up Node.js 24
+        uses: actions/setup-node@v7
+        with:
+          node-version: '24'
+          cache: npm
+          cache-dependency-path: frontend/package-lock.json
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Build
+        run: npm run build
+        env:
+          VITE_API_BASE_URL: /api
