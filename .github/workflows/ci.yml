@@ -69,3 +69,39 @@ jobs:
         run: npm run build
         env:
           VITE_API_BASE_URL: /api
+
+  deploy:
+    name: deploy
+    # Runs only after both jobs above pass...
+    needs: [backend-test, frontend-build]
+    # ...and only for a push to main. Pull requests, dev, and feature
+    # branches stop after testing and building.
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+    runs-on: ubuntu-24.04
+    permissions:
+      contents: read
+      packages: write # allows GITHUB_TOKEN to push to ghcr.io
+    env:
+      BACKEND_IMAGE: ghcr.io/aarmeliaa/uts-pl-24-538562-sv-24509-backend
+      FRONTEND_IMAGE: ghcr.io/aarmeliaa/uts-pl-24-538562-sv-24509-frontend
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v7
+
+      - name: Log in to GitHub Container Registry
+        env:
+          # Temporary token GitHub creates for this run; not stored anywhere.
+          GHCR_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: echo "$GHCR_TOKEN" | docker login ghcr.io -u "$GITHUB_ACTOR" --password-stdin
+
+      - name: Build backend image
+        run: docker build -t "$BACKEND_IMAGE:$GITHUB_SHA" backend
+
+      - name: Build frontend image
+        run: docker build --build-arg VITE_API_BASE_URL=/api -t "$FRONTEND_IMAGE:$GITHUB_SHA" frontend
+
+      # Tag = full commit SHA, never "latest".
+      - name: Push images
+        run: |
+          docker push "$BACKEND_IMAGE:$GITHUB_SHA"
+          docker push "$FRONTEND_IMAGE:$GITHUB_SHA"

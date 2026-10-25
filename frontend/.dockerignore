@@ -1,0 +1,13 @@
+# Secrets and local environment
+.env
+.env.*
+
+# Installed and built inside the image instead
+node_modules
+dist
+
+# Not needed to build the app
+.git
+.vscode
+Dockerfile
+.dockerignore
