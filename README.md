@@ -36,6 +36,32 @@ npm run dev
 
 Open `http://localhost:5173` and log in with the demo account. The API address is read from `VITE_API_BASE_URL`, never hardcoded in components.
 
+## Run everything with Docker Compose
+
+Requirements: Docker with the Compose plugin.
+
+```bash
+cp .env.example .env    # then fill in APP_KEY, DB_PASSWORD, DB_ROOT_PASSWORD
+docker compose up -d --build
+docker compose ps
+```
+
+| Service | Image | URL |
+|---|---|---|
+| `frontend` | Nginx serving the Vue build, proxies `/api/` to `backend:8000` | http://localhost:8080 |
+| `backend` | Laravel (`php artisan serve`), connects to `db:3306` | http://localhost:8000/api (for Postman) |
+| `db` | MySQL 8.4, data in the `db_data` named volume | internal only |
+
+The backend runs migrations and the seeder on every start, so the demo account is always available. Data stays after `docker compose down` and `docker compose up -d`. Use `docker compose down -v` only if you want to delete the database.
+
+## CI/CD
+
+`.github/workflows/ci.yml` runs on pushes to `main`, `dev`, `feature/**` and on pull requests to `main` and `dev`:
+
+- `backend-test`: `php artisan test` in `php:8.4.27-cli`
+- `frontend-build`: `npm ci` and `npm run build` on Node 24
+- `deploy` (push to `main` only): builds both images and pushes them to `ghcr.io/aarmeliaa/uts-pl-24-538562-sv-24509-{backend,frontend}:<commit-sha>`
+
 ## API endpoints
 
 All endpoints except `POST /api/login` need the header `Authorization: Bearer <token>`.
