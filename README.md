@@ -23,6 +23,19 @@ The API runs at `http://localhost:8000/api`. Run the tests with `php artisan tes
 
 Demo account (created by the seeder): `demo@example.com` / `password`
 
+## Frontend (local development)
+
+Requirements: Node.js 24. Start the backend first.
+
+```bash
+cd frontend
+npm ci
+cp .env.example .env   # VITE_API_BASE_URL=http://localhost:8000/api
+npm run dev
+```
+
+Open `http://localhost:5173` and log in with the demo account. The API address is read from `VITE_API_BASE_URL`, never hardcoded in components.
+
 ## API endpoints
 
 All endpoints except `POST /api/login` need the header `Authorization: Bearer <token>`.

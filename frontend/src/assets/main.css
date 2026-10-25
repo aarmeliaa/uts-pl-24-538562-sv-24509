@@ -1,0 +1,256 @@
+/*
+ * Theme on top of Bootstrap 5: warm paper background, dark ink text,
+ * and one rust accent color. Bootstrap reads these CSS variables.
+ */
+:root {
+  --ml-paper: #f7f5f0;
+  --ml-surface: #ffffff;
+  --ml-ink: #1d1f23;
+  --ml-muted: #5c6066;
+  --ml-line: #e4e0d7;
+  --ml-accent: #b5482a;
+  --ml-accent-dark: #933a21;
+  --ml-serif: 'Iowan Old Style', 'Palatino Linotype', Palatino, Georgia, serif;
+
+  --bs-body-bg: var(--ml-paper);
+  --bs-body-color: var(--ml-ink);
+  --bs-body-font-family: system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+  --bs-secondary-color: var(--ml-muted);
+  --bs-border-color: var(--ml-line);
+  --bs-link-color: var(--ml-accent);
+  --bs-link-color-rgb: 181, 72, 42;
+  --bs-link-hover-color: var(--ml-accent-dark);
+  --bs-link-hover-color-rgb: 147, 58, 33;
+  --bs-focus-ring-color: rgba(181, 72, 42, 0.3);
+}
+
+/* ---- Bootstrap overrides ---- */
+.btn-primary {
+  --bs-btn-bg: var(--ml-accent);
+  --bs-btn-border-color: var(--ml-accent);
+  --bs-btn-hover-bg: var(--ml-accent-dark);
+  --bs-btn-hover-border-color: var(--ml-accent-dark);
+  --bs-btn-active-bg: var(--ml-accent-dark);
+  --bs-btn-active-border-color: var(--ml-accent-dark);
+  --bs-btn-disabled-bg: var(--ml-accent);
+  --bs-btn-disabled-border-color: var(--ml-accent);
+  --bs-btn-focus-shadow-rgb: 181, 72, 42;
+}
+
+.btn-link {
+  text-decoration: none;
+  font-weight: 500;
+}
+
+.form-control,
+.form-select {
+  background-color: var(--ml-surface);
+}
+
+.form-control:focus,
+.form-select:focus {
+  border-color: var(--ml-accent);
+  box-shadow: 0 0 0 0.25rem rgba(181, 72, 42, 0.2);
+}
+
+/* ---- Shared ---- */
+.brand {
+  font-family: var(--ml-serif);
+  font-size: 1.3rem;
+  font-weight: 600;
+  letter-spacing: -0.01em;
+}
+
+.page-title {
+  font-family: var(--ml-serif);
+  font-size: 2rem;
+  font-weight: 600;
+}
+
+.panel {
+  background: var(--ml-surface);
+  border: 1px solid var(--ml-line);
+  border-radius: 0.75rem;
+  padding: 1.75rem;
+}
+
+/* ---- Login ---- */
+.login-page {
+  min-height: 100vh;
+  display: grid;
+  place-items: center;
+  padding: 2rem 1rem;
+}
+
+.login-card {
+  width: 100%;
+  max-width: 24rem;
+}
+
+.login-card .brand {
+  font-size: 2rem;
+}
+
+/* ---- Media page ---- */
+.app-header {
+  background: var(--ml-surface);
+  border-bottom: 1px solid var(--ml-line);
+}
+
+.filter-bar {
+  display: flex;
+  gap: 0.5rem;
+  overflow-x: auto;
+  padding-bottom: 0.25rem;
+}
+
+.filter-chip {
+  border: 1px solid var(--ml-line);
+  background: var(--ml-surface);
+  color: var(--ml-ink);
+  border-radius: 999px;
+  padding: 0.3rem 0.85rem;
+  font-size: 0.875rem;
+  white-space: nowrap;
+}
+
+.filter-chip:hover {
+  border-color: var(--ml-ink);
+}
+
+.filter-chip.active {
+  background: var(--ml-ink);
+  border-color: var(--ml-ink);
+  color: #fff;
+}
+
+.filter-chip .count {
+  margin-left: 0.25rem;
+  opacity: 0.7;
+  font-variant-numeric: tabular-nums;
+}
+
+.filter-chip:focus-visible {
+  outline: 2px solid var(--ml-accent);
+  outline-offset: 2px;
+}
+
+.media-list {
+  background: var(--ml-surface);
+  border: 1px solid var(--ml-line);
+  border-radius: 0.75rem;
+}
+
+.media-row {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 7rem auto;
+  gap: 1rem;
+  align-items: center;
+  padding: 1rem 1.25rem;
+}
+
+.media-row + .media-row {
+  border-top: 1px solid var(--ml-line);
+}
+
+.media-title {
+  font-size: 1.05rem;
+  font-weight: 600;
+  margin: 0;
+  overflow-wrap: anywhere;
+}
+
+.media-notes {
+  color: var(--ml-muted);
+  font-size: 0.9rem;
+  margin: 0.25rem 0 0;
+}
+
+.media-meta {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  font-variant-numeric: tabular-nums;
+}
+
+.rating {
+  font-weight: 600;
+  font-size: 1.05rem;
+}
+
+.date {
+  color: var(--ml-muted);
+  font-size: 0.85rem;
+}
+
+.type-tag {
+  font-size: 0.7rem;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--ml-muted);
+  border: 1px solid var(--ml-line);
+  border-radius: 0.25rem;
+  padding: 0.05rem 0.4rem;
+}
+
+/* Status: a small colored dot before the label. */
+.status {
+  --dot: #9aa0a6;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  font-size: 0.8rem;
+  color: var(--ml-muted);
+}
+
+.status::before {
+  content: '';
+  width: 0.5rem;
+  height: 0.5rem;
+  border-radius: 50%;
+  background: var(--dot);
+}
+
+.status-in_progress { --dot: #d39e00; }
+.status-completed { --dot: #2e7d4f; }
+.status-dropped { --dot: #b3261e; }
+
+/* Edit is neutral, Delete stays red, so the two actions are easy to tell apart. */
+.media-actions .btn-link:not(.text-danger) {
+  --bs-btn-color: var(--ml-ink);
+  --bs-btn-hover-color: var(--ml-accent);
+}
+
+.empty-state {
+  text-align: center;
+  padding: 3rem 1rem;
+  border: 1px dashed var(--ml-line);
+  border-radius: 0.75rem;
+  background: var(--ml-surface);
+}
+
+.media-dialog {
+  width: min(34rem, calc(100% - 2rem));
+  padding: 1.75rem;
+  border: none;
+  border-radius: 0.75rem;
+  color: var(--ml-ink);
+  box-shadow: 0 20px 50px rgba(0, 0, 0, 0.18);
+}
+
+.media-dialog::backdrop {
+  background: rgba(29, 31, 35, 0.45);
+}
+
+/* Small screens: actions move under the title. */
+@media (max-width: 575.98px) {
+  .media-row {
+    grid-template-columns: minmax(0, 1fr) auto;
+  }
+
+  .media-actions {
+    grid-column: 1 / -1;
+    margin-left: -0.5rem;
+  }
+}
