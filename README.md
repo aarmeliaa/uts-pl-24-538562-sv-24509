@@ -54,6 +54,55 @@ docker compose ps
 
 The backend runs migrations and the seeder on every start, so the demo account is always available. Data stays after `docker compose down` and `docker compose up -d`. Use `docker compose down -v` only if you want to delete the database.
 
+### Observability
+
+**Structured Logging:**
+Application logs are written to stdout in JSON format for easy parsing by log aggregation tools (Loki, Elasticsearch, CloudWatch).
+
+```bash
+# View all backend logs
+docker compose logs -f backend
+
+# View last 100 lines
+docker compose logs --tail=100 backend
+
+# Filter by error level (requires jq)
+docker compose logs backend | grep -o '{.*}' | jq 'select(.level_name=="ERROR")'
+```
+
+Logged events: login success/failure, media created, media deleted. Container logs are limited to 10MB × 3 files per service (30MB total). For production, use centralized logging.
+
+**Health Checks:**
+- Endpoint: `GET /health` returns `{"status": "healthy"}` (200) or `{"status": "unhealthy"}` (503)
+- No authentication required
+- Used by Docker Compose to monitor services
+
+```bash
+# Check health status
+docker compose ps
+
+# Manual test
+curl http://localhost:8000/health
+
+# Test unhealthy scenario
+docker compose stop db
+# Wait 30s, then docker compose ps shows backend as unhealthy
+docker compose start db
+# Wait 30s, backend returns to healthy
+```
+
+**Metrics (Prometheus):**
+- Endpoint: `GET /metrics` returns metrics in Prometheus text format
+- No authentication required
+- Metrics: total users, total media, media by type/status, database health
+
+```bash
+# View metrics
+curl http://localhost:8000/metrics
+```
+
+Ready for Prometheus + Grafana integration (add to docker-compose.yml to scrape and visualize).
+
 ## CI/CD
 
 `.github/workflows/ci.yml` runs on pushes to `main`, `dev`, `feature/**` and on pull requests to `main` and `dev`:
