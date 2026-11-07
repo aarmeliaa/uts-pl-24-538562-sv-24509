@@ -22,6 +22,9 @@ FROM nginx:1.31.8-alpine
 
 LABEL org.opencontainers.image.source="https://github.com/aarmeliaa/uts-pl-24-538562-sv-24509"
 
+# Install curl for healthcheck.
+RUN apk add --no-cache curl
+
 COPY nginx.conf /etc/nginx/conf.d/default.conf
 COPY --from=build /app/dist /usr/share/nginx/html
 

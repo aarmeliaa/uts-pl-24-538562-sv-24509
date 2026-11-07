@@ -6,6 +6,7 @@ use App\Http\Requests\StoreMediaRequest;
 use App\Http\Requests\UpdateMediaRequest;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Log;
 
 /**
  * CRUD for the logged-in user's media.
@@ -30,6 +31,14 @@ class MediaController extends Controller
     public function store(StoreMediaRequest $request): JsonResponse
     {
         $media = $request->user()->media()->create($request->validated());
+
+        Log::info('Media created', [
+            'user_id' => $request->user()->id,
+            'media_id' => $media->id,
+            'title' => $media->title,
+            'type' => $media->type,
+            'status' => $media->status,
+        ]);
 
         return response()->json($media, 201);
     }
@@ -61,6 +70,14 @@ class MediaController extends Controller
     public function destroy(Request $request, string $id): JsonResponse
     {
         $media = $request->user()->media()->findOrFail($id);
+        
+        Log::info('Media deleted', [
+            'user_id' => $request->user()->id,
+            'media_id' => $media->id,
+            'title' => $media->title,
+            'type' => $media->type,
+        ]);
+
         $media->delete();
 
         return response()->json([

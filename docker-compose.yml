@@ -20,6 +20,11 @@ services:
       timeout: 5s
       retries: 20
       start_period: 20s
+    logging:
+      driver: json-file
+      options:
+        max-size: "10m"
+        max-file: "3"
 
   backend:
     build: ./backend
@@ -30,7 +35,8 @@ services:
       APP_DEBUG: "false"
       APP_KEY: ${APP_KEY}
       APP_URL: http://localhost:8000
-      LOG_CHANNEL: stderr
+      LOG_CHANNEL: stdout
+      LOG_LEVEL: info
       DB_CONNECTION: mysql
       DB_HOST: db # service name, not an IP address
       DB_PORT: 3306
@@ -43,6 +49,17 @@ services:
         condition: service_healthy
     ports:
       - "8000:8000" # optional: lets Postman call the API directly
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8000/health"]
+      interval: 10s
+      timeout: 5s
+      retries: 3
+      start_period: 30s
+    logging:
+      driver: json-file
+      options:
+        max-size: "10m"
+        max-file: "3"
 
   frontend:
     build:
@@ -54,6 +71,17 @@ services:
       - backend
     ports:
       - "8080:80"
+    healthcheck:
+      test: ["CMD-SHELL", "curl -f http://localhost:80 || exit 1"]
+      interval: 10s
+      timeout: 5s
+      retries: 3
+      start_period: 10s
+    logging:
+      driver: json-file
+      options:
+        max-size: "10m"
+        max-file: "3"
 
 volumes:
   db_data:
