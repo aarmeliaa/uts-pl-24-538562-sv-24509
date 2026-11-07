@@ -5,8 +5,9 @@ FROM php:8.4.27-cli
 LABEL org.opencontainers.image.source="https://github.com/aarmeliaa/uts-pl-24-538562-sv-24509"
 
 # unzip is used by Composer; pdo_mysql lets Laravel talk to MySQL.
+# curl is used by Docker healthcheck.
 RUN apt-get update \
-    && apt-get install -y --no-install-recommends unzip \
+    && apt-get install -y --no-install-recommends unzip curl \
     && docker-php-ext-install pdo_mysql \
     && rm -rf /var/lib/apt/lists/*
 
